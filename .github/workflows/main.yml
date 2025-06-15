@@ -5,10 +5,67 @@ on:
     branches: [zh]
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    uses: ./.github/workflows/build.yml
-    with:
-      site_url: /crp-zh/
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      
+      - name: Build telemetry
+        run: |
+          cd telemetry
+          pnpm install
+          npx vite build
+        env:
+          CI: true
+      
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: '0.4.51'
+      
+      - name: Install mdbook-quiz
+        uses: baptiste0928/cargo-install@v3
+        with:
+          crate: mdbook-quiz
+          version: '^0.3.10'
+      
+      - name: Build book
+        run: mdbook build
+        env:
+          MDBOOK_OUTPUT__HTML__SITE_URL: /crp-zh/
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './book'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
