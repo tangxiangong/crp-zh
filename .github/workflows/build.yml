@@ -3,10 +3,6 @@ name: Build book
 on:
   workflow_call:
     inputs:
-      destination_dir:
-        required: false
-        type: string
-        default: ''
       site_url:
         required: true
         type: string
@@ -45,4 +41,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./book
-          destination_dir: ${{ inputs.destination_dir }}
