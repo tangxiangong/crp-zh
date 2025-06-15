@@ -1,8 +1,9 @@
 [book]
-title = "C++ to Rust Phrasebook"
+title = "C++ to Rust Phrasebook 中文"
 authors = ["Cognitive Engineering Lab"]
-language = "en"
-description = "A book to help translate C++ idioms into Rust."
+language = "zh-CN"
+translator = "Xiangong Tang"
+description = "一本帮助将 C++ 常见用法转换为 Rust 的书籍。"
 multilingual = false
 src = "src"
 
@@ -13,7 +14,7 @@ additional-js = ["telemetry/dist/telemetry.iife.js"]
 code.hidelines = { cpp = "$" }
 fold.enable = true
 fold.level = 1
-site-url = "https://cel.cs.brown.edu/crp"
+site-url = "https://tangxiangong.github.io/crp-zh"
 git-repository-url = "https://github.com/tangxiangong/crp-zh"
 
 [preprocessor.quiz]

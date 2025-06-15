@@ -11,4 +11,4 @@ jobs:
   deploy:
     uses: ./.github/workflows/build.yml
     with:
-      site_url: /crp/
+      site_url: /crp-zh/
