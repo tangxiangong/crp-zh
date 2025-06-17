@@ -1,14 +1,8 @@
 # Constructors
 
-In C++, constructors initialize objects. At the point when a constructor is executed, storage for the object has been
-allocated and the constructor is only performing initialization.
+在C++中，构造函数用于初始化对象。当构造函数执行时，对象的内存空间已经分配完毕，构造函数仅负责执行初始化操作。
 
-Rust does not have constructors in the same way as C++. In Rust, there is a
-single fundamental way to create an object, which is to initialize all of its
-members at once. The term "constructor" or "constructor method" in Rust refers
-to something more like a factory: a static method associated with a type (i.e.,
-a method that does not have a `self` parameter), which returns a value of the
-type.
+Rust并不像C++那样拥有构造函数。在Rust中，创建对象的唯一基本方式是立即初始化其所有成员。Rust中的"构造函数"或"构造方法"这一术语更类似于工厂模式：它是一个与类型关联的静态方法（即没有`self`参数的方法， 译者注：在 Rust 中称为关联函数），该方法会返回对应类型的值/对象。
 
 <div class="comparison">
 
@@ -60,17 +54,9 @@ fn main() {
 </div>
 
 
-In Rust, typically the primary constructor for a type is named `new`, especially if it
-takes no arguments. (See the chapter on [default
-constructors](./constructors/default_constructors.html).) Constructors based on
-some specific property of the value are usually named `with_<something>`, e.g.,
-`ThreadPool::with_threads`. See the [naming
-guidelines](https://rust-lang.github.io/api-guidelines/naming.html) for the
-conventions on how to name constructor methods in Rust.
+在Rust中，类型的默认构造函数通常命名为`new`，尤其当它不接收参数时，详见[默认构造函数](./constructors/default_constructors.html)章节。基于值/对象特定属性的构造函数通常采用`with_<属性名>`的命名形式，例如`ThreadPool::with_threads`。关于Rust构造函数方法的命名规范，请参阅[命名指南](https://rust-lang.github.io/api-guidelines/naming.html)。
 
-If the fields to be initialized are visible, there is a reasonable default
-value, and the value does not manage a resource, then it is also common to use
-record update syntax to initialize a value based on some default value.
+若需初始化的属性可见（译者注：即 `public`）、存在合理的默认值且该值不涉及资源管理，则通常也会基于某个默认值，采用记录更新语法来完成初始化。
 
 ```rust
 struct Point {
@@ -93,33 +79,19 @@ fn main() {
 }
 ```
 
-Despite the name, "record update syntax" does not modify a record but instead
-creates a new value based on another one, taking ownership of it in order to do
-so.
+尽管名为“记录更新语法”，但它并不修改记录本身，而是基于现有值创建一个新值，并在此过程中取得所有权。
 
-## Storage allocation vs initialization
+## 内存分配 vs 初始化
 
-In Rust, the actual construction of a structure or enum value occurs where the
-structure construction syntax (e.g., `ThreadPool { ... }`) is, after the
-evaluation of the expressions for the fields (e.g., `cpu_count()`).
+在Rust中，结构体或枚举值的实际构造发生在结构体构造语法（例如`ThreadPool { ... }`）所在位置，且在所有字段表达式（如`cpu_count()`）求值完成之后。
 
-A significant implication of this difference is that storage is not allocated
-for a struct in Rust at the point where the constructor method (such as
-`ThreadPool::with_threads`) is called, and in fact is not allocated until after the
-values of the fields of a struct have been computed (in terms of the semantics
-of the language &mdash; the optimizer may still avoid the copy). Therefore there is no
-straightforward way in Rust to translate patterns such as a class which stores a pointer to
-itself upon construction (in Rust, this requires tools like [`Pin`](https://doc.rust-lang.org/std/pin/struct.Pin.html) and [`MaybeUninit`](https://doc.rust-lang.org/std/mem/union.MaybeUninit.html)).
+这一差异的重要含义在于：在Rust中，结构体的内存分配并非发生在其构造方法（例如`ThreadPool::with_threads`）被调用的时候，实际上要等到结构体所有字段的值都计算完成后才会分配内存（根据语言语义而言——优化器仍可能避免复制操作）。因此，Rust中没有直接对应 C++ 诸如"在构造时存储指向自身指针的类"这些模式的功能（在Rust中实现此类功能需要借助[`Pin`](https://doc.rust-lang.org/std/pin/struct.Pin.html)和[`MaybeUninit`](https://doc.rust-lang.org/std/mem/union.MaybeUninit.html)等工具）。
 
-## Fallible constructors
+## 可以指示失败的构造函数
 
-In C++, the primary way constructors can indicate failure is by throwing
-exceptions. In Rust, because constructors are normal static methods, fallible
-constructors can instead return `Result` (akin to `std::expected`) or `Option`
-(akin to `std::optional`).[^NonZero]
+在C++中，构造函数主要通过抛出异常来指示失败。而在Rust中，由于构造函数是普通的静态方法，可失败的构造函数可以返回 `Result`（类似于`std::expected`）或`Option`（类似于`std::optional`）。[^NonZero]
 
-[^NonZero]: An alternative approach here would be to use `NonZero<usize>` as the
-    type so that the error case wasn't possible in the first place.
+[^NonZero]: 此处另一种方法是使用`NonZero<usize>`作为类型，这样从一开始就避免了错误情况的发生。
 
 <div class="comparison">
 
@@ -183,5 +155,4 @@ fn main() {
 
 </div>
 
-See [the chapter on exceptions](./exceptions.md) for more information on
-how C++ exceptions and exception handling translate to Rust.
+有关C++异常及其异常处理如何对应到Rust的更多信息，请参阅[异常章节](./exceptions.md)。
